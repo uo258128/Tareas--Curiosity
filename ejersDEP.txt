@@ -1,0 +1,179 @@
+EJERCICIO EN dsPIC30F6014
+
+El primer ejercicio era hacer que los LEDs parpadeen cada 0.5ms.
+
+
+
+Registros: 
+ - Tris_=1 - Entradas (ej Switches)
+ - Tris_=0 - Salidas  (Ej Led)
+
+ - LAT_=x para escribir. (Ej. para encender leds)
+
+
+
+En func.c
+
+void InitIO(){
+
+//Configuramos leds como salidas
+
+    TRISEbits.TRISE0 = 0;
+    TRISEbits.TRISE1 = 0;
+    TRISBbits.TRISB14 = 0;
+    TRISDbits.TRISD7 = 0;
+    TRISDbits.TRISD5 = 0;
+    
+// Como puse en la hoja, aquí los inicializo al revés.
+
+    LATEbits.LATE0=0;
+    LATEbits.LATE1=0;
+    LATBbits.LATB14=0;
+    LATDbits.LATD7=0;
+    LATDbits.LATD5=0;
+   
+}
+
+
+
+En func.h
+
+//Acuérdate que Fosc/2=Fcy
+
+#define FCY = (4000000); 
+void InitIO();
+
+
+En el loop (main.c)
+
+ while (1)
+    {
+        __delay_ms(500);
+        LATEbits.LATE0 =! LATEbits.LATE0;
+        LATEbits.LATE1 =! LATEbits.LATE1;
+        LATBbits.LATB14 =! LATBbits.LATB14;
+        LATDbits.LATD7 =! LATDbits.LATD7;
+        LATDbits.LATD5 =! LATDbits.LATD5;
+    }
+
+______________________________________________________________________________________________________________________
+
+Vamos con los efectos.
+
+EN EL Func.c
+
+
+void Efecto1(unsigned int aux)
+{
+    switch(aux)
+       case 0:LATEbits.LATE0 = 1;
+       break;
+       case 1:LATEbits.LATE1 = 1;
+       break;
+       case 2:LATBbits.LATB14 = 1;
+       break;
+       case 3:LATDbits.LATD7 = 1;
+	 break;
+       case 4:LATDbits.LATD5 = 1;
+	 break;
+       // default:LATD = 0xFFFF; ------ DUDA, cómo poner todos en default, cuando ya no solo están 
+							// en un puerto
+    }
+    return;
+}
+
+
+void Efecto2(unsigned int aux)
+{
+    switch(cont){   //Vamos a probar a que en cada caso se pueda poner más de una orden
+       case 0:
+	       LATEbits.LATE0 = 1;
+	 break;
+       
+       case 1:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+	 break;
+
+	 case 2:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=1;
+	 break;
+
+       case 3:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=1;
+		 LATDbits.LATD7=1;
+       break;
+
+       case 4:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=1;
+		 LATDbits.LATD7=1;
+		 LATDbits.LATD5=1;
+       break;
+
+       case 5:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=1;
+		 LATDbits.LATD7=1;
+		 LATDbits.LATD5=0;
+       break;
+
+       case 6:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=1;
+		 LATDbits.LATD7=0;
+		 LATDbits.LATD5=0;
+       break;
+
+       case 7:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 1;
+		 LATBbits.LATB14=0;
+		 LATDbits.LATD7=0;
+		 LATDbits.LATD5=0;
+	 break;
+
+       case 8:
+		 LATEbits.LATE0 = 1;
+		 LATEbits.LATE1 = 0;
+		 LATBbits.LATB14=0;
+		 LATDbits.LATD7=0;
+		 LATDbits.LATD5=0;
+       break;
+
+	 case 9:
+		 LATEbits.LATE0 = 0;
+		 LATEbits.LATE1 = 0;
+		 LATBbits.LATB14=0;
+		 LATDbits.LATD7=0;
+		 LATDbits.LATD5=0;
+       break;
+       
+
+	 default:
+		 LATEbits.LATE0 = 0;
+		 LATEbits.LATE1 = 0;
+		 LATBbits.LATB14=0;
+		 LATDbits.LATD7=0;
+		 LATDbits.LATD5=0;
+    }
+    return;
+}   
+    
+void Efecto2_bis(unsigned int desplaza){
+    switch(desplaza){
+        case 0:LATD = ((PORTD<<1) &  0xFFFE);  //Se van metiendo "0s" ->Enciende LEDs
+        break;
+        case 1:LATD = ((PORTD>>1) |  0x0008);  //Se van metiendo "1s" ->Apago LEDs
+        break;
+    }
+    return;
+}
+
